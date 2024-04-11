@@ -143,45 +143,45 @@ Main:
   STR     R5, [R4]
   @ Nothing else to do in Main
   @ Idle loop forever (welcome to interrupts!!)
-Idle_Loop:
-  LDR   R9, [R11]
-  CMP   R9, #1
-  BEQ   .Lfail
-  B     Idle_Loop
+Idle_Loop:                            @ do {
+  LDR   R9, [R11]                     @ failedTiming = word[address4];
+  CMP   R9, #1                        @                                    // if (failedTiming == true)
+  BEQ   .Lfail                        @                                    // branch out of forever loop to stop program
+  B     Idle_Loop                     @ } while (!failedTiming)
 
 .Lfail:
   LDR     R4, =GPIOE_MODER
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD3_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD3_PIN*2))    @ write 01 to bits 
+  ORR     R5, #(0b00<<(LD3_PIN*2))    @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD4_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD4_PIN*2))    @ write 01 to bits 
+  ORR     R5, #(0b00<<(LD4_PIN*2))    @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD5_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD5_PIN*2))    @ write 01 to bits 
+  ORR     R5, #(0b00<<(LD5_PIN*2))    @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD6_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD6_PIN*2))    @ write 01 to bits 
+  ORR     R5, #(0b00<<(LD6_PIN*2))    @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD7_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD7_PIN*2))    @ write 01 to bits 
+  ORR     R5, #(0b00<<(LD7_PIN*2))    @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD8_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD8_PIN*2))    @ write 01 to bits 
+  ORR     R5, #(0b00<<(LD8_PIN*2))    @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD9_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD9_PIN*2))    @ write 01 to bits 
+  ORR     R5, #(0b00<<(LD9_PIN*2))    @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
-  BIC     R5, #(0b11<<(LD10_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD10_PIN*2))    @ write 01 to bits 
+  BIC     R5, #(0b11<<(LD10_PIN*2))   @ Modify ...
+  ORR     R5, #(0b00<<(LD10_PIN*2))   @ write 00 to bits 
   STR     R5, [R4]                    @ Write 
 End_Main:
   POP   {R4-R12,PC}
@@ -189,7 +189,7 @@ End_Main:
 
 
 @
-@ SysTick interrupt handler (blink LED LD3)
+@ SysTick interrupt handler (blink all LEDs in a circle)
 @
   .type  SysTick_Handler, %function
 SysTick_Handler:
@@ -219,7 +219,7 @@ SysTick_Handler:
   LDRB     R2, [R6]                 @
   CMP      R2, #0                   @
   BEQ     .LdoneFlash               @
-  EOR     R5, #(0b1<<(LD4_PIN))     @
+  EOR     R5, #(0b1<<(LD4_PIN))     @ GPIOE_ODR = GPIOE_ODR ^ (1<<LD4_PIN);
   STR     R5, [R4]                  @
   B       .LdoneFlash               @
  .LLDFive:
@@ -229,7 +229,7 @@ SysTick_Handler:
   BNE     .LLDSeven                 @
    LDR     R4, =GPIOE_ODR            @   Invert LD3
    LDR     R5, [R4]                  @
-   EOR     R5, #(0b1<<(LD5_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+   EOR     R5, #(0b1<<(LD5_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD5_PIN);
    EOR     R5, #(0b1<<(LD3_PIN))     @
    STR     R5, [R4]                  @ 
    ADD     R1, R1, #1                @
@@ -242,7 +242,7 @@ SysTick_Handler:
   BNE     .LLDNine                   @
   LDR     R4, =GPIOE_ODR            @   Invert LD3
   LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD7_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD7_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD7_PIN);
   EOR     R5, #(0b1<<(LD5_PIN))     @
   STR     R5, [R4]                  @
   ADD     R1, R1, #1                @
@@ -255,7 +255,7 @@ SysTick_Handler:
   BNE     .LLDTen                   @
   LDR     R4, =GPIOE_ODR            @   Invert LD3
   LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD9_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD9_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD9_PIN);
   EOR     R5, #(0b1<<(LD7_PIN))     @
   STR     R5, [R4]                  @ 
   ADD     R1, R1, #1                @
@@ -268,7 +268,7 @@ SysTick_Handler:
   BNE     .LLDEight                 @
   LDR     R4, =GPIOE_ODR            @   Invert LD3
   LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD10_PIN))    @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD10_PIN))    @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD10_PIN);
   EOR     R5, #(0b1<<(LD9_PIN))     @
   STR     R5, [R4]                  @ 
   MOV     R8, #1                    @ correctLight = true;
@@ -283,7 +283,7 @@ SysTick_Handler:
   BNE     .LLDSix                   @
   LDR     R4, =GPIOE_ODR            @   Invert LD3
   LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD8_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD8_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD8_PIN);
   EOR     R5, #(0b1<<(LD10_PIN))    @
   STR     R5, [R4]                  @ 
   MOV     R8, #0                    @ correctLight = false;
@@ -298,7 +298,7 @@ SysTick_Handler:
   BNE     .LLDFour                  @
   LDR     R4, =GPIOE_ODR            @   Invert LD3
   LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD6_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD6_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD6_PIN);
   EOR     R5, #(0b1<<(LD8_PIN))     @
   STR     R5, [R4]                  @ 
   ADD     R1, R1, #1                @
@@ -308,7 +308,7 @@ SysTick_Handler:
   LDR  R0, =0x20000018              @
   LDR     R4, =GPIOE_ODR            @   Invert LD3
   LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD4_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD4_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD4_PIN);
   EOR     R5, #(0b1<<(LD6_PIN))     @
   STR     R5, [R4]                  @ 
   MOV     R1,  #0                   @
@@ -316,29 +316,29 @@ SysTick_Handler:
 .LdoneFlash:
   LDRB    R2, [R6]                  @
   ADD     R2, #1                    @
-  STRB    R2, [R6]  
-  @ MOV     R4, #160
-  @ CMP     R7, R4
-  @ BHI     .LStopIncrease
-  @ CMP     R2, R7
-  @ BLO     .LStopIncrease
-  @ SUB     R3, R3, #4000
+  STRB    R2, [R6]                  @
+  @ MOV     R4, #160                @
+  @ CMP     R7, R4                  @
+  @ BHI     .LStopIncrease          @
+  @ CMP     R2, R7                  @
+  @ BLO     .LStopIncrease          @
+  @ SUB     R3, R3, #4000           @
   @ LDR     R4, =SYSTICK_LOAD         @ Set SysTick LOAD for 1ms delay
   @ MOV     R5, R3                    @ Assuming 8MHz clock
-  @ STR     R5, [R4]     
-  @ ADD     R7, R7, #8
+  @ STR     R5, [R4]                @
+  @ ADD     R7, R7, #8              @
   @ .LStopIncrease:
-  LDR     R4, =blink_countdown      @   countdown = BLINK_PERIOD;
+  LDR     R4, =blink_countdown      @ countdown = BLINK_PERIOD;
   LDR     R5, =BLINK_PERIOD         @
-  SUB     R5, R5, R3
-  STR     R5, [R4]  
-  ADD     R3, R3, #50
-  MOV     R5, #8
-  UDIV    R12, R2, R5
+  SUB     R5, R5, R3                @
+  STR     R5, [R4]                  @
+  ADD     R3, R3, #50               @
+  MOV     R5, #8                    @
+  UDIV    R12, R2, R5               @
   LDR     R4, =button_count         @ count = 0;
-  LDR     R5, [R4]
-  CMP     R5, R12
-  BLO     .Lfail
+  LDR     R5, [R4]                  @
+  CMP     R5, R12                   @
+  BLO     .Lfail                    @
   
 .LendIfDelay:                       @ }
 
@@ -353,7 +353,7 @@ SysTick_Handler:
 
 @
 @ External interrupt line 0 interrupt handler
-@   (count button presses)
+@   (count button presses and check if button was pressed at correct time)
 @
   .type  EXTI0_IRQHandler, %function
 EXTI0_IRQHandler:
