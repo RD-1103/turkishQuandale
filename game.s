@@ -19,15 +19,15 @@
   .section .text
 
 Main:
-  LDR  R0, = 0x20000018            @ int address1;
-  LDR  R6, = 0x20000019            @ int address2;
-  LDR  R10, =0x20000010            @ int address3;
-  LDR  R11, =0x20000014            @ int address4;
+  LDR  R0, = 0x20000018
+  LDR  R6, = 0x20000019 
+  LDR  R10, =0x20000010
+  LDR  R11, =0x20000014
 
   PUSH  {R4-R12,LR}
   MOV   R7, #8
   MOV   R8, #0           @ boolean correctLight = false;
-  MOV   R3, #100
+  MOV   R3, #10
 
   @
   @ Prepare GPIO Port E Pin 9 for output (LED LD3)
@@ -40,8 +40,10 @@ Main:
   ORR     R5, R5, #(0b1 << (RCC_AHBENR_GPIOEEN_BIT))
   STR     R5, [R4]
 
-  @ Configure all pins for output
+  @ Configure LD3-LD10 for output
+
   @   by setting bits 27:26 of GPIOE_MODER to 01 (GPIO Port E Mode Register)
+
   @   (by BIClearing then ORRing)
   LDR     R4, =GPIOE_MODER
   LDR     R5, [R4]                    @ Read ...
@@ -114,7 +116,7 @@ Main:
   @ Initialise count to zero
   LDR   R4, =button_count             @ count = 0;
   MOV   R5, #0                        @
-  STR   R5, [R4]                      @ 
+  STR   R5, [R4]                      @
 
   @ Configure USER pushbutton (GPIO Port A Pin 0 on STM32F3 Discovery
   @   kit) to use the EXTI0 external interrupt signal
@@ -143,45 +145,45 @@ Main:
   STR     R5, [R4]
   @ Nothing else to do in Main
   @ Idle loop forever (welcome to interrupts!!)
-Idle_Loop:                            @ do {
-  LDR   R9, [R11]                     @ failedTiming = word[address4];
-  CMP   R9, #1                        @                                    // if (failedTiming == true)
-  BEQ   .Lfail                        @                                    // branch out of forever loop to stop program
-  B     Idle_Loop                     @ } while (!failedTiming)
+Idle_Loop:
+  LDR   R9, [R11]
+  CMP   R9, #1
+  BEQ   .Lfail
+  B     Idle_Loop
 
 .Lfail:
   LDR     R4, =GPIOE_MODER
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD3_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD3_PIN*2))    @ write 00 to bits 
+  ORR     R5, #(0b00<<(LD3_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD4_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD4_PIN*2))    @ write 00 to bits 
+  ORR     R5, #(0b00<<(LD4_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD5_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD5_PIN*2))    @ write 00 to bits 
+  ORR     R5, #(0b00<<(LD5_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD6_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD6_PIN*2))    @ write 00 to bits 
+  ORR     R5, #(0b00<<(LD6_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD7_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD7_PIN*2))    @ write 00 to bits 
+  ORR     R5, #(0b00<<(LD7_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD8_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD8_PIN*2))    @ write 00 to bits 
+  ORR     R5, #(0b00<<(LD8_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
   BIC     R5, #(0b11<<(LD9_PIN*2))    @ Modify ...
-  ORR     R5, #(0b00<<(LD9_PIN*2))    @ write 00 to bits 
+  ORR     R5, #(0b00<<(LD9_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
   LDR     R5, [R4]                    @ Read ...
-  BIC     R5, #(0b11<<(LD10_PIN*2))   @ Modify ...
-  ORR     R5, #(0b00<<(LD10_PIN*2))   @ write 00 to bits 
+  BIC     R5, #(0b11<<(LD10_PIN*2))    @ Modify ...
+  ORR     R5, #(0b00<<(LD10_PIN*2))    @ write 01 to bits 
   STR     R5, [R4]                    @ Write 
 End_Main:
   POP   {R4-R12,PC}
@@ -189,7 +191,7 @@ End_Main:
 
 
 @
-@ SysTick interrupt handler (blink all LEDs in a circle)
+@ SysTick interrupt handler (blink LED LD3)
 @
   .type  SysTick_Handler, %function
 SysTick_Handler:
@@ -197,7 +199,7 @@ SysTick_Handler:
   PUSH  {R4-R12, LR}
 
   LDR   R4, =blink_countdown        @ if (countdown != 0) {
-  LDR   R5, [R4]                    @
+  LDR   R5, [R4]                    @ 
   CMP   R5, #0                      @
   BEQ   .LelseFire                  @
   SUB   R5, R5, #1                  @   countdown = countdown - 1;
@@ -206,139 +208,138 @@ SysTick_Handler:
   B     .LendIfDelay                @ }
 
 .LelseFire:                         @ else {
-  LDR      R0, =0x20000018          @
-  LDRB     R1, [R0]                 @
-  CMP     R1, #0                    @
-  BNE     .LLDFive                  @
-  LDR     R4, =GPIOE_ODR            @   Invert LD3
-  LDR     R5, [R4]                  @
+  LDR      R0, =0x20000018          @ load address;
+  LDRB     R1, [R0]                 @ ledNumb = byte[address];
+  CMP     R1, #0                    @ if(ledNumb==0)
+  BNE     .LLDFive                  @ {
+  LDR     R4, =GPIOE_ODR            @   Invert LD3;
+  LDR     R5, [R4]                  @ 
   EOR     R5, #(0b1<<(LD3_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
   STR     R5, [R4]                  @ 
-  ADD     R1, R1, #1                @
-  STRB     R1, [R0]                 @
-  LDRB     R2, [R6]                 @
-  CMP      R2, #0                   @
-  BEQ     .LdoneFlash               @
-  EOR     R5, #(0b1<<(LD4_PIN))     @ GPIOE_ODR = GPIOE_ODR ^ (1<<LD4_PIN);
-  STR     R5, [R4]                  @
-  B       .LdoneFlash               @
- .LLDFive:
-  LDR    R0, =0x20000018            @
-  LDRB     R1, [R0]                 @
-  CMP     R1, #1                    @
-  BNE     .LLDSeven                 @
-   LDR     R4, =GPIOE_ODR            @   Invert LD3
+  ADD     R1, R1, #1                @   ledNumb++;
+  STRB     R1, [R0]                 @   byte[address] = ledNumb;
+  LDRB     R2, [R6]                 @   lightCounter  = byte[address2];
+  CMP      R2, #0                   @   if(lightCount ==0)
+  BEQ     .LdoneFlash               @   {
+  EOR     R5, #(0b1<<(LD4_PIN))     @     invert LD4;
+  STR     R5, [R4]                  @   }
+  B       .LdoneFlash               @ }
+ .LLDFive:                          @ else {
+  LDR    R0, =0x20000018            @   load address;
+  LDRB     R1, [R0]                 @   ledNumb = byte[address];
+  CMP     R1, #1                    @   if(ledNumb ==1)
+  BNE     .LLDSeven                 @   {
+   LDR     R4, =GPIOE_ODR            @     invert LD5;
    LDR     R5, [R4]                  @
-   EOR     R5, #(0b1<<(LD5_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD5_PIN);
-   EOR     R5, #(0b1<<(LD3_PIN))     @
+   EOR     R5, #(0b1<<(LD5_PIN))     @    GPIOE_ODR =   GPIOE_ODR ^ (1<<LD3_PIN);
+   EOR     R5, #(0b1<<(LD3_PIN))     @    invert LD3;
    STR     R5, [R4]                  @ 
-   ADD     R1, R1, #1                @
-   STRB     R1, [R0]                 @
-   B       .LdoneFlash2              @
-  .LLDSeven:
-  LDR    R0, =0x20000018             @
-  LDRB    R1, [R0]                   @
-  CMP     R1, #2                     @
-  BNE     .LLDNine                   @
-  LDR     R4, =GPIOE_ODR            @   Invert LD3
-  LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD7_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD7_PIN);
-  EOR     R5, #(0b1<<(LD5_PIN))     @
-  STR     R5, [R4]                  @
-  ADD     R1, R1, #1                @
-  STRB     R1, [R0]                 @
-  B       .LdoneFlash               @
-  .LLDNine:
-  LDR  R0, =0x20000018              @
-  LDRB     R1, [R0]                 @
-  CMP     R1, #3                    @
-  BNE     .LLDTen                   @
-  LDR     R4, =GPIOE_ODR            @   Invert LD3
-  LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD9_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD9_PIN);
-  EOR     R5, #(0b1<<(LD7_PIN))     @
+   ADD     R1, R1, #1                @    ledNumb++;
+   STRB     R1, [R0]                 @    byte[address] = ledNumb;
+   B       .LdoneFlash              @    }
+  .LLDSeven:                        @    else{
+  LDR    R0, =0x20000018            @     load address;
+  LDRB    R1, [R0]                  @     ledNumb = byte[address];
+  CMP     R1, #2                    @     if(ledNumb ==2)
+  BNE     .LLDNine                  @     {
+  LDR     R4, =GPIOE_ODR            @       Invert LD7;
+  LDR     R5, [R4]                  @       invert LD5;
+  EOR     R5, #(0b1<<(LD7_PIN))     @       GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD5_PIN))     @       
+  STR     R5, [R4]                  @       ledNumb++;
+  ADD     R1, R1, #1                @ 
+  STRB     R1, [R0]                 @       byte[address] = ledNumb;  
+  B       .LdoneFlash               @       }
+  .LLDNine:                         @
+  LDR  R0, =0x20000018              @       else{
+  LDRB     R1, [R0]                 @          ledNumb = byteAddress;
+  CMP     R1, #3                    @          if(ledNumb ==3)
+  BNE     .LLDTen                   @          {
+  LDR     R4, =GPIOE_ODR            @             Invert LD9;
+  LDR     R5, [R4]                  @             invert LD7;
+  EOR     R5, #(0b1<<(LD9_PIN))     @             GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD7_PIN))     @        
   STR     R5, [R4]                  @ 
-  ADD     R1, R1, #1                @
-  STRB    R1, [R0]                  @
-  B       .LdoneFlash               @
-  .LLDTen:
-  LDR    R0, =0x20000018            @
-  LDRB     R1, [R0]                 @
-  CMP     R1, #4                    @
-  BNE     .LLDEight                 @
-  LDR     R4, =GPIOE_ODR            @   Invert LD3
-  LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD10_PIN))    @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD10_PIN);
-  EOR     R5, #(0b1<<(LD9_PIN))     @
+  ADD     R1, R1, #1                @             ledNumb++;
+  STRB    R1, [R0]                  @             byte[address] = ledNumb;
+  B       .LdoneFlash               @         }
+  .LLDTen:                          @         else{
+  LDR    R0, =0x20000018            @           load address;
+  LDRB     R1, [R0]                 @           ledNum = byte[address];
+  CMP     R1, #4                    @           if(ledNum==4)
+  BNE     .LLDEight                 @           {
+  LDR     R4, =GPIOE_ODR            @             Invert LD10
+  LDR     R5, [R4]                  @             invert LD9
+  EOR     R5, #(0b1<<(LD10_PIN))    @             GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD9_PIN))     @             
+  STR     R5, [R4]                  @             
+  MOV     R8, #1                    @             correctLight = true;
+  STR     R8, [R10]                 @             word[address10] = correctLight
+  ADD     R1, R1,  #1               @             ledNumb++;
+  STRB     R1, [R0]                 @             byte[address] = ledNumb;
+  B       .LdoneFlash               @             }
+  .LLDEight:                        @             else{
+  LDR  R0, =0x20000018              @               load address;
+  LDRB     R1, [R0]                 @               ledNumb = byte[address];
+  CMP     R1, #5                    @               if(ledNumb ==5)
+  BNE     .LLDSix                   @               {
+  LDR     R4, =GPIOE_ODR            @                 Invert LD8;
+  LDR     R5, [R4]                  @                 invert LD10;
+  EOR     R5, #(0b1<<(LD8_PIN))     @                 GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD10_PIN))    @                 
+  STR     R5, [R4]                  @                 
+  MOV     R8, #0                    @                 correctLight = false;
+  STR     R8, [R10]                 @                 word[address10] = correctLight      
+  ADD     R1, R1, #1                @                 ledNumb++;
+  STRB    R1, [R0]                  @                 byte[address] = ledNumb;
+  B       .LdoneFlash               @                 }
+  .LLDSix:                          @                 else{
+  LDR    R0, =0x20000018            @                   laod address;                       
+  LDRB     R1, [R0]                 @                   ledNumb = byte[address];
+  CMP     R1, #6                    @                   if(ledNumb ==6)
+  BNE     .LLDFour                  @                   {
+  LDR     R4, =GPIOE_ODR            @                     invert LD6
+  LDR     R5, [R4]                  @                     invert LD8
+  EOR     R5, #(0b1<<(LD6_PIN))     @                     GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
+  EOR     R5, #(0b1<<(LD8_PIN))     @                 
   STR     R5, [R4]                  @ 
-  MOV     R8, #1                    @ correctLight = true;
-  STR     R8, [R10]                 @
-  ADD     R1, R1,  #1               @
-  STRB     R1, [R0]                 @
-  B       .LdoneFlash               @
-  .LLDEight:
-  LDR  R0, =0x20000018              @
-  LDRB     R1, [R0]                 @
-  CMP     R1, #5                    @
-  BNE     .LLDSix                   @
-  LDR     R4, =GPIOE_ODR            @   Invert LD3
-  LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD8_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD8_PIN);
-  EOR     R5, #(0b1<<(LD10_PIN))    @
-  STR     R5, [R4]                  @ 
-  MOV     R8, #0                    @ correctLight = false;
-  STR     R8, [R10]                 @
-  ADD     R1, R1, #1                @
-  STRB    R1, [R0]                  @
-  B       .LdoneFlash               @
-  .LLDSix:
-  LDR    R0, =0x20000018            @
-  LDRB     R1, [R0]                 @
-  CMP     R1, #6                    @
-  BNE     .LLDFour                  @
-  LDR     R4, =GPIOE_ODR            @   Invert LD3
-  LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD6_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD6_PIN);
-  EOR     R5, #(0b1<<(LD8_PIN))     @
-  STR     R5, [R4]                  @ 
-  ADD     R1, R1, #1                @
-  STRB     R1, [R0]                 @
-  B       .LdoneFlash               @
-  .LLDFour:
-  LDR  R0, =0x20000018              @
-  LDR     R4, =GPIOE_ODR            @   Invert LD3
-  LDR     R5, [R4]                  @
-  EOR     R5, #(0b1<<(LD4_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD4_PIN);
+  ADD     R1, R1, #1                @                     ledNumb++;
+  STRB     R1, [R0]                 @                     byte[address] = ledNumb;
+  B       .LdoneFlash               @                    }
+  .LLDFour:                         @                   else{
+  LDR  R0, =0x20000018              @                     load address;
+  LDR     R4, =GPIOE_ODR            @                     invert LD4
+  LDR     R5, [R4]                  @                     invert LD6
+  EOR     R5, #(0b1<<(LD4_PIN))     @                     GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
   EOR     R5, #(0b1<<(LD6_PIN))     @
-  STR     R5, [R4]                  @ 
-  MOV     R1,  #0                   @
-  STRB     R1, [R0]                 @
-.LdoneFlash:
-  LDRB    R2, [R6]                  @
-  ADD     R2, #1                    @
-  STRB    R2, [R6]                  @
-  @ MOV     R4, #160                @
-  @ CMP     R7, R4                  @
-  @ BHI     .LStopIncrease          @
-  @ CMP     R2, R7                  @
-  @ BLO     .LStopIncrease          @
-  @ SUB     R3, R3, #4000           @
+  STR     R5, [R4]                  @     
+  MOV     R1,  #0                   @                     ledNumb =0;
+  STRB     R1, [R0]                 @                     byte[address] = ledNumb;
+.LdoneFlash:                        @                     } 
+  LDRB    R2, [R6]                  @           
+  ADD     R2, #1                    @         
+  STRB    R2, [R6]                  @             
+  @ MOV     R4, #160                @             
+  @ CMP     R7, R4                  @           
+  @ BHI     .LStopIncrease          @                   
+  @ CMP     R2, R7
+  @ BLO     .LStopIncrease
+  @ SUB     R3, R3, #4000
   @ LDR     R4, =SYSTICK_LOAD         @ Set SysTick LOAD for 1ms delay
   @ MOV     R5, R3                    @ Assuming 8MHz clock
-  @ STR     R5, [R4]                @
-  @ ADD     R7, R7, #8              @
+  @ STR     R5, [R4]     
+  @ ADD     R7, R7, #8
   @ .LStopIncrease:
-  LDR     R4, =blink_countdown      @ countdown = BLINK_PERIOD;
+  LDR     R4, =blink_countdown      @   countdown = BLINK_PERIOD;
   LDR     R5, =BLINK_PERIOD         @
-  SUB     R5, R5, R3                @
-  STR     R5, [R4]                  @
-  ADD     R3, R3, #50               @
-  MOV     R5, #8                    @
-  UDIV    R12, R2, R5               @
-  LDR     R4, =button_count         @ count = 0;
-  LDR     R5, [R4]                  @
-  CMP     R5, R12                   @
-  BLO     .Lfail                    @
+  SUB     R5, R5, R3
+  STR     R5, [R4]  
+  MOV     R5, #8
+  UDIV    R12, R2, R5
+  LDR     R4, =button_count             @ count = 0;
+  LDR     R5, [R4]
+  CMP     R5, R12
+  BLO     .Lfail
   
 .LendIfDelay:                       @ }
 
@@ -353,26 +354,26 @@ SysTick_Handler:
 
 @
 @ External interrupt line 0 interrupt handler
-@   (count button presses and check if button was pressed at correct time)
+@   (count button presses)
 @
   .type  EXTI0_IRQHandler, %function
 EXTI0_IRQHandler:
 
   PUSH  {R4-R12, LR}
 
-  LDR   R4, =button_count           @ 
-  LDR   R5, [R4]                    @ count = word[button_count];
-  ADD   R5, R5, #1                  @ count++;
-  STR   R5, [R4]                    @ word[button_count] = count;
-  LDR   R10, =0x20000010            @ address3 = 0x20000010;
-  LDR   R11, =0x20000014            @ address4 = 0x20000014;
-  LDR   R8, [R10]                   @ correctLight = word[address];
-  CMP   R8, #1                      @ if (!correctLight)
-  BEQ   .LcontinueProgram           @ {
-  MOV   R9, #1                      @    boolean failedTiming = true;         // button has been pressed at wrong time
-  STR   R9, [R11]                   @    word[address] = failedTiming;
+  LDR   R4, =button_count
+  LDR   R5, [R4]
+  ADD   R5, R5, #1
+  STR   R5, [R4]
+  LDR   R10, =0x20000010            @ 
+  LDR   R11, =0x20000014            @
+  LDR   R8, [R10]                   @
+  CMP   R8, #1                      @
+  BEQ   .LcontinueProgram           @ 
+  MOV   R9, #1                      @ boolean failedTiming = true;
+  STR   R9, [R11]                   @
 
-.LcontinueProgram:                  @ }
+.LcontinueProgram:
   LDR   R4, =EXTI_PR                @ Clear (acknowledge) the interrupt
   MOV   R5, #(1<<0)                 @
   STR   R5, [R4]                    @
