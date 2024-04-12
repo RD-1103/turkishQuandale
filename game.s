@@ -206,8 +206,8 @@ SysTick_Handler:
   B     .LendIfDelay                @ }
 
 .LelseFire:                         @ else {
-  LDR      R0, =0x20000018          @  load address;
-  LDRB     R1, [R0]                 @  ledNumb = byte[address];
+  LDR      R0, =0x20000018          @  load address1;
+  LDRB     R1, [R0]                 @  ledNumb = byte[address1];
   CMP     R1, #0                    @  if(ledNumb==0)
   BNE     .LLDFive                  @ {
   LDR     R4, =GPIOE_ODR            @   Invert LD3;
@@ -215,7 +215,7 @@ SysTick_Handler:
   EOR     R5, #(0b1<<(LD3_PIN))     @   GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
   STR     R5, [R4]                  @ 
   ADD     R1, R1, #1                @   ledNumb++;
-   STRB     R1, [R0]                 @   byte[address] = ledNumb;
+   STRB     R1, [R0]                 @   byte[address1] = ledNumb;
   LDRB     R2, [R6]                 @   lightCounter  = byte[address2];
   CMP      R2, #0                   @   if(lightCount ==0)
   BEQ     .LdoneFlash               @   {
@@ -223,8 +223,8 @@ SysTick_Handler:
   STR     R5, [R4]                  @   }
   B       .LdoneFlash               @ }
  .LLDFive:                          @ else {
-  LDR    R0, =0x20000018            @   load address;
-  LDRB     R1, [R0]                 @   ledNumb = byte[address];
+  LDR    R0, =0x20000018            @   load address1;
+  LDRB     R1, [R0]                 @   ledNumb = byte[address1];
   CMP     R1, #1                    @   if(ledNumb ==1)
   BNE     .LLDSeven                 @   {
    LDR     R4, =GPIOE_ODR            @     invert LD5;
@@ -233,11 +233,11 @@ SysTick_Handler:
    EOR     R5, #(0b1<<(LD3_PIN))     @    invert LD3;
    STR     R5, [R4]                  @ 
    ADD     R1, R1, #1                @    ledNumb++;
-   STRB     R1, [R0]                 @    byte[address] = ledNumb;
+   STRB     R1, [R0]                 @    byte[address1] = ledNumb;
    B       .LdoneFlash              @    }
   .LLDSeven:                        @    else{
- LDR    R0, =0x20000018            @     load address;
-  LDRB    R1, [R0]                  @     ledNumb = byte[address];
+ LDR    R0, =0x20000018            @     load address1;
+  LDRB    R1, [R0]                  @     ledNumb = byte[address1];
   CMP     R1, #2                    @     if(ledNumb ==2)
   BNE     .LLDNine                  @     {
   LDR     R4, =GPIOE_ODR            @       Invert LD7;
@@ -246,11 +246,11 @@ SysTick_Handler:
   EOR     R5, #(0b1<<(LD5_PIN))     @       invert LD5;
   STR     R5, [R4]                  @       ledNumb++;
   ADD     R1, R1, #1                @ 
-  STRB     R1, [R0]                 @       byte[address] = ledNumb;  
+  STRB     R1, [R0]                 @       byte[address1] = ledNumb;  
   B       .LdoneFlash               @       }
   .LLDNine:                         @
   LDR  R0, =0x20000018              @       else{
-  LDRB     R1, [R0]                 @          ledNumb = byteAddress;
+  LDRB     R1, [R0]                 @          ledNumb = byte[address1];
   CMP     R1, #3                    @          if(ledNumb ==3)
   BNE     .LLDTen                   @          {
   LDR     R4, =GPIOE_ODR            @             Invert LD9;
@@ -259,11 +259,11 @@ SysTick_Handler:
   EOR     R5, #(0b1<<(LD7_PIN))     @             invert LD7;
   STR     R5, [R4]                  @ 
   ADD     R1, R1, #1                @             ledNumb++;
-  STRB    R1, [R0]                  @             byte[address] = ledNumb;
+  STRB    R1, [R0]                  @             byte[address1] = ledNumb;
   B       .LdoneFlash               @         }
   .LLDTen:                          @         else{
-  LDR    R0, =0x20000018            @           load address;
-  LDRB     R1, [R0]                 @           ledNum = byte[address];
+  LDR    R0, =0x20000018            @           load address1;
+  LDRB     R1, [R0]                 @           ledNum = byte[address1];
   CMP     R1, #4                    @           if(ledNum==4)
   BNE     .LLDEight                 @           {
   LDR     R4, =GPIOE_ODR            @             Invert LD10
@@ -272,13 +272,13 @@ SysTick_Handler:
   EOR     R5, #(0b1<<(LD9_PIN))     @             invert LD9;
   STR     R5, [R4]                  @             
   MOV     R8, #1                    @             correctLight = true;
-  STR     R8, [R10]                 @             word[address10] = correctLight
+  STR     R8, [R10]                 @             word[address3] = correctLight;
   ADD     R1, R1,  #1               @             ledNumb++;
-  STRB     R1, [R0]                 @             byte[address] = ledNumb;
+  STRB     R1, [R0]                 @             byte[address1] = ledNumb;
   B       .LdoneFlash               @             }
   .LLDEight:                        @             else{
-  LDR  R0, =0x20000018              @               load address;
-  LDRB     R1, [R0]                 @               ledNumb = byte[address];
+  LDR  R0, =0x20000018              @               load address1;
+  LDRB     R1, [R0]                 @               ledNumb = byte[address1];
   CMP     R1, #5                    @               if(ledNumb ==5)
   BNE     .LLDSix                   @               {
   LDR     R4, =GPIOE_ODR            @                 Invert LD8;
@@ -287,13 +287,13 @@ SysTick_Handler:
   EOR     R5, #(0b1<<(LD10_PIN))    @                 invert LD10;
   STR     R5, [R4]                  @                 
   MOV     R8, #0                    @                 correctLight = false;
-  STR     R8, [R10]                 @                 word[address10] = correctLight      
+  STR     R8, [R10]                 @                 word[address3] = correctLight;      
   ADD     R1, R1, #1                @                 ledNumb++;
-  STRB    R1, [R0]                  @                 byte[address] = ledNumb;
+  STRB    R1, [R0]                  @                 byte[address1] = ledNumb;
   B       .LdoneFlash               @                 }
   .LLDSix:                          @                 else{
-  LDR    R0, =0x20000018            @                   laod address;                       
-  LDRB     R1, [R0]                 @                   ledNumb = byte[address];
+  LDR    R0, =0x20000018            @                   load address1;                       
+  LDRB     R1, [R0]                 @                   ledNumb = byte[address1];
   CMP     R1, #6                    @                   if(ledNumb ==6)
   BNE     .LLDFour                  @                   {
   LDR     R4, =GPIOE_ODR            @                     invert LD6
@@ -302,17 +302,17 @@ SysTick_Handler:
   EOR     R5, #(0b1<<(LD8_PIN))     @                     invert LD8;
   STR     R5, [R4]                  @ 
   ADD     R1, R1, #1                @                     ledNumb++;
-  STRB     R1, [R0]                 @                     byte[address] = ledNumb;
+  STRB     R1, [R0]                 @                     byte[address1] = ledNumb;
   B       .LdoneFlash               @                    }
   .LLDFour:                         @                   else{
-  LDR  R0, =0x20000018              @                     load address;
+  LDR  R0, =0x20000018              @                     load address1;
   LDR     R4, =GPIOE_ODR            @                     invert LD4
   LDR     R5, [R4]                  @                     invert LD6
   EOR     R5, #(0b1<<(LD4_PIN))     @                     GPIOE_ODR = GPIOE_ODR ^ (1<<LD4_PIN);
   EOR     R5, #(0b1<<(LD6_PIN))     @                     invert LD6;
   STR     R5, [R4]                  @     
   MOV     R1,  #0                   @                     ledNumb =0;
-  STRB     R1, [R0]                 @                     byte[address] = ledNumb;
+  STRB     R1, [R0]                 @                     byte[address1] = ledNumb;
 .LdoneFlash:
   LDRB    R2, [R6]                  @
   ADD     R2, #1                    @
