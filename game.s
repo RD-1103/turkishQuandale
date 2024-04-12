@@ -366,11 +366,11 @@ EXTI0_IRQHandler:
   STR   R5, [R4]                    @ word[button_count] = count;
   LDR   R10, =0x20000010            @ address3 = 0x20000010;
   LDR   R11, =0x20000014            @ address4 = 0x20000014;
-  LDR   R8, [R10]                   @ correctLight = word[address];
+  LDR   R8, [R10]                   @ correctLight = word[address3];
   CMP   R8, #1                      @ if (!correctLight)
   BEQ   .LcontinueProgram           @ {
   MOV   R9, #1                      @    boolean failedTiming = true;         // button has been pressed at wrong time
-  STR   R9, [R11]                   @    word[address] = failedTiming;
+  STR   R9, [R11]                   @    word[address4] = failedTiming;
 
 .LcontinueProgram:                  @ }
   LDR   R4, =EXTI_PR                @ Clear (acknowledge) the interrupt
