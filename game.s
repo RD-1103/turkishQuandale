@@ -229,7 +229,7 @@ SysTick_Handler:
   BNE     .LLDSeven                 @   {
    LDR     R4, =GPIOE_ODR            @     invert LD5;
    LDR     R5, [R4]                  @
-   EOR     R5, #(0b1<<(LD5_PIN))     @    GPIOE_ODR =   GPIOE_ODR ^ (1<<LD3_PIN);
+   EOR     R5, #(0b1<<(LD5_PIN))     @    GPIOE_ODR =   GPIOE_ODR ^ (1<<LD5_PIN);
    EOR     R5, #(0b1<<(LD3_PIN))     @    invert LD3;
    STR     R5, [R4]                  @ 
    ADD     R1, R1, #1                @    ledNumb++;
@@ -242,8 +242,8 @@ SysTick_Handler:
   BNE     .LLDNine                  @     {
   LDR     R4, =GPIOE_ODR            @       Invert LD7;
   LDR     R5, [R4]                  @       invert LD5;
-  EOR     R5, #(0b1<<(LD7_PIN))     @       GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
-  EOR     R5, #(0b1<<(LD5_PIN))     @       
+  EOR     R5, #(0b1<<(LD7_PIN))     @       GPIOE_ODR = GPIOE_ODR ^ (1<<LD7_PIN);
+  EOR     R5, #(0b1<<(LD5_PIN))     @       invert LD5;
   STR     R5, [R4]                  @       ledNumb++;
   ADD     R1, R1, #1                @ 
   STRB     R1, [R0]                 @       byte[address] = ledNumb;  
@@ -255,8 +255,8 @@ SysTick_Handler:
   BNE     .LLDTen                   @          {
   LDR     R4, =GPIOE_ODR            @             Invert LD9;
   LDR     R5, [R4]                  @             invert LD7;
-  EOR     R5, #(0b1<<(LD9_PIN))     @             GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
-  EOR     R5, #(0b1<<(LD7_PIN))     @        
+  EOR     R5, #(0b1<<(LD9_PIN))     @             GPIOE_ODR = GPIOE_ODR ^ (1<<LD9_PIN);
+  EOR     R5, #(0b1<<(LD7_PIN))     @             invert LD7;
   STR     R5, [R4]                  @ 
   ADD     R1, R1, #1                @             ledNumb++;
   STRB    R1, [R0]                  @             byte[address] = ledNumb;
@@ -268,8 +268,8 @@ SysTick_Handler:
   BNE     .LLDEight                 @           {
   LDR     R4, =GPIOE_ODR            @             Invert LD10
   LDR     R5, [R4]                  @             invert LD9
-  EOR     R5, #(0b1<<(LD10_PIN))    @             GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
-  EOR     R5, #(0b1<<(LD9_PIN))     @             
+  EOR     R5, #(0b1<<(LD10_PIN))    @             GPIOE_ODR = GPIOE_ODR ^ (1<<LD10_PIN);
+  EOR     R5, #(0b1<<(LD9_PIN))     @             invert LD9;
   STR     R5, [R4]                  @             
   MOV     R8, #1                    @             correctLight = true;
   STR     R8, [R10]                 @             word[address10] = correctLight
@@ -283,8 +283,8 @@ SysTick_Handler:
   BNE     .LLDSix                   @               {
   LDR     R4, =GPIOE_ODR            @                 Invert LD8;
   LDR     R5, [R4]                  @                 invert LD10;
-  EOR     R5, #(0b1<<(LD8_PIN))     @                 GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
-  EOR     R5, #(0b1<<(LD10_PIN))    @                 
+  EOR     R5, #(0b1<<(LD8_PIN))     @                 GPIOE_ODR = GPIOE_ODR ^ (1<<LD8_PIN);
+  EOR     R5, #(0b1<<(LD10_PIN))    @                 invert LD10;
   STR     R5, [R4]                  @                 
   MOV     R8, #0                    @                 correctLight = false;
   STR     R8, [R10]                 @                 word[address10] = correctLight      
@@ -298,8 +298,8 @@ SysTick_Handler:
   BNE     .LLDFour                  @                   {
   LDR     R4, =GPIOE_ODR            @                     invert LD6
   LDR     R5, [R4]                  @                     invert LD8
-  EOR     R5, #(0b1<<(LD6_PIN))     @                     GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
-  EOR     R5, #(0b1<<(LD8_PIN))     @                 
+  EOR     R5, #(0b1<<(LD6_PIN))     @                     GPIOE_ODR = GPIOE_ODR ^ (1<<LD6_PIN);
+  EOR     R5, #(0b1<<(LD8_PIN))     @                     invert LD8;
   STR     R5, [R4]                  @ 
   ADD     R1, R1, #1                @                     ledNumb++;
   STRB     R1, [R0]                 @                     byte[address] = ledNumb;
@@ -308,8 +308,8 @@ SysTick_Handler:
   LDR  R0, =0x20000018              @                     load address;
   LDR     R4, =GPIOE_ODR            @                     invert LD4
   LDR     R5, [R4]                  @                     invert LD6
-  EOR     R5, #(0b1<<(LD4_PIN))     @                     GPIOE_ODR = GPIOE_ODR ^ (1<<LD3_PIN);
-  EOR     R5, #(0b1<<(LD6_PIN))     @
+  EOR     R5, #(0b1<<(LD4_PIN))     @                     GPIOE_ODR = GPIOE_ODR ^ (1<<LD4_PIN);
+  EOR     R5, #(0b1<<(LD6_PIN))     @                     invert LD6;
   STR     R5, [R4]                  @     
   MOV     R1,  #0                   @                     ledNumb =0;
   STRB     R1, [R0]                 @                     byte[address] = ledNumb;
