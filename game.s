@@ -1,5 +1,5 @@
 # PASTE LINK TO TEAM VIDEO BELOW
-#
+# https://media.heanet.ie/page/3d293d8b6bf348189239eb89a60c116e
 #
 
   .syntax unified
@@ -131,8 +131,8 @@ Main:
   ORR     R5, R5, #1
   STR     R5, [R4]
 
-  @ Set falling edge detection on Line0
-  LDR     R4, =EXTI_FTSR
+  @ Set rising edge detection on Line0
+  LDR     R4, =EXTI_RTSR
   LDR     R5, [R4]
   ORR     R5, R5, #1
   STR     R5, [R4]
@@ -317,17 +317,6 @@ SysTick_Handler:
   LDRB    R2, [R6]                  @
   ADD     R2, #1                    @
   STRB    R2, [R6]                  @
-  @ MOV     R4, #160                @
-  @ CMP     R7, R4                  @
-  @ BHI     .LStopIncrease          @
-  @ CMP     R2, R7                  @
-  @ BLO     .LStopIncrease          @
-  @ SUB     R3, R3, #4000           @
-  @ LDR     R4, =SYSTICK_LOAD         @ Set SysTick LOAD for 1ms delay
-  @ MOV     R5, R3                    @ Assuming 8MHz clock
-  @ STR     R5, [R4]                @
-  @ ADD     R7, R7, #8              @
-  @ .LStopIncrease:
   LDR     R4, =blink_countdown      @ countdown = BLINK_PERIOD;
   LDR     R5, =BLINK_PERIOD         @
   SUB     R5, R5, R3                @
